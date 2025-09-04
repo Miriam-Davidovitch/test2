@@ -5,48 +5,121 @@ const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
-module.exports = async (req, res) => {
-  // CORS headers
+// חיפוש לקוח לפי טלפון/מייל/מספר הזמנה
+const searchCustomer = async (req, res) => {
+  
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   
-  // Prevent caching
-  res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
-  res.header('Pragma', 'no-cache');
-  res.header('Expires', '0');
-  
+  const searchTerm = req.params.searchTerm;
   try {
-    console.log('=== API CALL STARTED ===');
-    console.log('Connecting to Supabase cloud database...');
+    // חיפוש לקוח לפי טלפון או מייל
+    let { data: customer, error: customerError } = await supabase
+      .from('customers')
+      .select('*')
+      .or(`phone.eq.${searchTerm},email.eq.${searchTerm}`)
+      .single();
     
-    // חיבור רק למסד נתונים בענן
-    const { data, error } = await supabase.from('users').select('*');
-    
-    console.log('Supabase response - data:', data);
-    console.log('Supabase response - error:', error);
-    
-    if (error) {
-      console.log('=== SUPABASE ERROR ===');
-      console.log('Error message:', error.message);
-      console.log('Error details:', JSON.stringify(error, null, 2));
-      return res.status(500).json({ 
-        error: 'Database connection failed: ' + error.message,
-        message: 'Could not connect to cloud database',
-        details: error
-      });
+    // אם לא נמצא לפי טלפון/מייל, ננסה לפי מספר הזמנה
+    if (customerError && !isNaN(searchTerm)) {
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .select('customerid')
+        .eq('orderid', parseInt(searchTerm))
+        .single();
+      
+      if (!orderError && orderData) {
+        const { data: customerByOrder, error: customerByOrderError } = await supabase
+          .from('customers')
+          .select('*')
+          .eq('customerid', orderData.customerid)
+          .single();
+        
+        if (!customerByOrderError) {
+          customer = customerByOrder;
+        }
+      }
     }
-
-    console.log('=== SUCCESS ===');
-    console.log('Successfully fetched from cloud database:', data);
-    return res.status(200).json({ 
-      source: 'supabase_cloud', 
-      message: 'Data retrieved from Supabase cloud database',
-      count: data ? data.length : 0,
-      data: data || []
+    
+    if (!customer) {
+      return res.status(404).json({ error: 'לא נמצא לקוח' });
+    }
+    
+    // שליפת הזמנות ומוצרים
+    const { data: orders, error: ordersError } = await supabase
+      .from('orders')
+      .select(`
+        orderid,
+        orderdate,
+        orderproducts (
+          orderproductid,
+          finalweight,
+          paidprice,
+          products (
+            productname,
+            avgweight,
+            priceperkg
+          )
+        )
+      `)
+      .eq('customerid', customer.customerid)
+      .order('orderdate', { ascending: false });
+    
+    if (ordersError) {
+      return res.status(500).json({ error: 'שגיאה בשליפת הזמנות' });
+    }
+    
+    // עיצוב הנתונים
+    const formattedOrders = orders.map(order => ({
+      orderid: order.orderid,
+      orderdate: order.orderdate,
+      products: order.orderproducts.map(op => ({
+        orderproductid: op.orderproductid,
+        productname: op.products.productname,
+        avgweight: op.products.avgweight,
+        priceperkg: op.products.priceperkg,
+        finalweight: op.finalweight,
+        paidprice: op.paidprice
+      }))
+    }));
+    
+    res.json({
+      customer,
+      orders: formattedOrders
     });
     
   } catch (err) {
-    console.log('Server error:', err.message);
-    return res.status(500).json({ error: err.message });
+    console.error('שגיאה בחיפוש לקוח:', err);
+    res.status(500).json({ error: 'שגיאת שרת' });
   }
 };
+
+// עדכון משקל סופי
+const updateWeight = async (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  
+  const { orderProductId, finalWeight } = req.body;
+  
+  try {
+    const { error } = await supabase
+      .from('orderproducts')
+      .update({ 
+        finalweight: finalWeight,
+        updatedat: new Date().toISOString()
+      })
+      .eq('orderproductid', orderProductId);
+    
+    if (error) {
+      return res.status(500).json({ error: 'שגיאה בעדכון משקל' });
+    }
+    
+    res.json({ message: 'משקל עודכן בהצלחה' });
+    
+  } catch (err) {
+    console.error('שגיאה בעדכון משקל:', err);
+    res.status(500).json({ error: 'שגיאת שרת' });
+  }
+};
+
+module.exports = { searchCustomer, updateWeight };

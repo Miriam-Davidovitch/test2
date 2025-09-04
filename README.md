@@ -1,70 +1,78 @@
-# Getting Started with Create React App
+# מערכת ניהול מחסן מוצרים 📦
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+אפליקציה לניהול מלאי מוצרים עם ממשק משתמש ידידותי, שרת Express ומסד נתונים Supabase.
 
-## Available Scripts
+## תכונות המערכת ✨
 
-In the project directory, you can run:
+- 📋 צפייה ברשימת מוצרים במחסן
+- ➕ הוספת מוצרים חדשים
+- 💰 חישוב אוטומטי של ערך המלאי
+- 📊 סטטיסטיקות מלאי בזמן אמת
+- 🔄 סנכרון עם מסד נתונים בענן
 
-### `npm start`
+## הגדרת הפרויקט 🚀
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### 1. הכנת מסד הנתונים
+1. היכנס ל-Supabase Dashboard
+2. פתח את ה-SQL Editor
+3. הרץ את הקוד מהקובץ `database_setup.sql`
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### 2. הגדרת משתני סביבה
+צור קובץ `.env.local` עם:
+```
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-### `npm test`
+### 3. התקנת תלויות
+```bash
+npm install
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## הפעלת המערכת 🏃‍♂️
 
-### `npm run build`
+### הפעלת השרת (טרמינל 1)
+```bash
+npm run server
+```
+השרת יפעל על: http://localhost:8080
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### הפעלת הקלינט (טרמינל 2)
+```bash
+npm start
+```
+האפליקציה תפתח על: http://localhost:3000
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## מבנה הפרויקט 📁
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+my-app/
+├── src/
+│   └── App.js          # ממשק המשתמש הראשי
+├── api/
+│   └── getData.js      # API לניהול מוצרים
+├── server.js           # שרת Express
+├── database_setup.sql  # הגדרת מסד הנתונים
+└── package.json        # תלויות הפרויקט
+```
 
-### `npm run eject`
+## API Endpoints 🔌
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- `GET /api/products` - קבלת כל המוצרים
+- `POST /api/products` - הוספת מוצר חדש
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## טכנולוגיות 🛠️
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- **Frontend**: React 19
+- **Backend**: Node.js + Express
+- **Database**: Supabase (PostgreSQL)
+- **Styling**: CSS inline
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## פיתוח נוסף 🔮
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+רעיונות להרחבה:
+- עריכת ומחיקת מוצרים
+- חיפוש וסינון
+- קטגוריות מוצרים
+- התראות מלאי נמוך
+- דוחות ואנליטיקה
