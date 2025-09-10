@@ -1,0 +1,457 @@
+/* מיכל ראשי */
+.main-container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* כותרת ראשית */
+.main-title {
+  text-align: center;
+  color: #d32f2f;
+  margin-bottom: 30px;
+}
+
+/* טופס חיפוש */
+.search-form {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+/* שדה קלט חיפוש */
+.search-input {
+  padding: 12px;
+  font-size: 16px;
+  width: 300px;
+  margin-left: 10px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+}
+
+/* כפתור חיפוש */
+.search-button {
+  padding: 12px 20px;
+  font-size: 16px;
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #b71c1c;
+}
+
+.search-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* קוביית פרטי לקוח */
+.customer-info {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+.customer-info h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.customer-info p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+/* כותרת הזמנות */
+.orders-title {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* מיכל הזמנה */
+.order-container {
+  border: 1px solid #ddd;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  background-color: white;
+}
+
+/* כותרת הזמנה */
+.order-title {
+  color: #d32f2f;
+  margin-bottom: 15px;
+}
+
+/* טבלת מוצרים */
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+/* ראש טבלה */
+.table-header {
+  background-color: #e0e0e0;
+}
+
+.table-header th {
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* תאי טבלה */
+.table-cell {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+/* שדה קלט משקל */
+.weight-input {
+  width: 80px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  text-align: center;
+}
+
+/* עמודת פעולות - חוב */
+.debt-cell {
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+  color: red;
+}
+
+/* עמודת פעולות - זיכוי */
+.credit-cell {
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+  color: green;
+}
+
+/* עמודת פעולות - מאוזן */
+.balanced-cell {
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+  color: black;
+}
+
+/* עמודת פעולות - ממתין */
+.waiting-cell {
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-weight: bold;
+  text-align: center;
+  color: #666;
+}
+
+/* כפתור שמירה כללי */
+.save-all-button {
+  padding: 15px 30px;
+  font-size: 18px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+}
+
+.save-all-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.save-all-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* עיצוב רספונסיבי */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 10px;
+  }
+  
+  .search-input {
+    width: 250px;
+    margin-left: 5px;
+  }
+  
+  .products-table {
+    font-size: 14px;
+  }
+  
+  .table-cell, .table-header th {
+    padding: 4px;
+  }
+  
+  .weight-input {
+    width: 60px;
+  }
+  
+  .save-all-button {
+    padding: 12px 20px;
+    font-size: 16px;
+  }
+}
+
+/* שורת סיכום */
+.table-summary {
+  background-color: #f8f9fa;
+  border-top: 2px solid #d32f2f;
+  font-weight: bold;
+}
+
+.summary-label {
+  text-align: right;
+  padding: 12px 8px;
+  font-size: 16px;
+  color: #333;
+}
+
+.summary-amount {
+  text-align: center;
+  padding: 12px 8px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.total-debt {
+  color: #d32f2f;
+  font-size: 18px;
+}
+
+.total-credit {
+  color: #4caf50;
+  font-size: 18px;
+}
+
+.total-balanced {
+  color: #333;
+  font-size: 18px;
+}
+
+/* Checkbox לא קיבל מוצר */
+.not-received-checkbox {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #d32f2f;
+}
+
+.not-received-checkbox:hover {
+  transform: scale(1.1);
+}
+
+/* הודעות מערכת */
+.message {
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.message-success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.message-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.message-warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.message-info {
+  background-color: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+.message-close-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: inherit;
+}
+
+/* דף בית - כניסה */
+.login-section {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.login-title {
+  margin-bottom: 30px;
+}
+
+.login-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.login-btn {
+  padding: 20px 40px;
+  font-size: 18px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  color: white;
+}
+
+.customer-btn {
+  background-color: #4caf50;
+}
+
+.customer-btn:hover {
+  background-color: #45a049;
+}
+
+.admin-btn {
+  background-color: #d32f2f;
+}
+
+.admin-btn:hover {
+  background-color: #b71c1c;
+}
+
+/* כותרת עם כפתור יציאה */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* כותרת ללקוח בלי כפתור יציאה */
+.customer-header {
+  margin-bottom: 20px;
+}
+
+.exit-btn {
+  padding: 10px 20px;
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.exit-btn:hover {
+  background-color: #555;
+}
+
+/* דף מנהל */
+.admin-content {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.admin-description {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 40px;
+}
+
+.admin-action-btn {
+  padding: 15px 30px;
+  font-size: 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.admin-action-btn:hover {
+  background-color: #45a049;
+}
+
+.admin-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 10px 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+}
+
+.admin-nav-header h2 {
+  margin: 0;
+}
+
+.back-btn {
+  padding: 8px 16px;
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.back-btn:hover {
+  background-color: #555;
+}
+
+/* עיצוב משקלים */
+.weight-input-container {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.final-price {
+  font-weight: bold;
+  color: #333;
+}
+
+.unsaved-indicator {
+  color: #ff9800;
+  font-size: 12px;
+}
+
+.save-changes-container {
+  text-align: center;
+  margin-top: 30px;
+  padding: 20px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 10px;
+}
+
+.save-changes-text {
+  margin: 0 0 15px 0;
+  color: #856404;
+}
