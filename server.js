@@ -26,7 +26,7 @@ app.get('/test', (req, res) => {
   res.json({ message: 'Server is working!' });
 });
 
-// API routes
+
 app.get('/api/customer/:searchTerm', (req, res) => {
   searchCustomer(req, res);
 });
@@ -36,7 +36,7 @@ app.post('/api/update-weight', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🥩 מערכת מכירת בשר פועלת על http://localhost:${PORT}`);
+  // console.log(`🥩 מערכת מכירת בשר פועלת על http://localhost:${PORT}`);
   console.log('🔍 חיפוש לקוח: /api/customer/:searchTerm');
   console.log('⚖️ עדכון משקל: /api/update-weight');
   console.log('🧪 בדיקה: /test');
