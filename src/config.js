@@ -4,7 +4,7 @@ const config = {
   API_BASE_URL: process.env.REACT_APP_API_URL || 
     (window.location.hostname === 'localhost' 
       ? 'http://localhost:3001' 
-      : 'https://YOUR-BACKEND-NAME.vercel.app'),  // שני כאן את כתובת השרת ב-Vercel!
+      : 'https://server-side-eight-swart.vercel.app'),  // כתובת השרת ב-Vercel
     
   // נתיבי API
   ENDPOINTS: {
