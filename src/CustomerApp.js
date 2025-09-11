@@ -85,7 +85,7 @@ function CustomerApp() {
   return (
     <div className="main-container" dir="rtl">
       <div className="customer-header">
-        <h1 className="main-title">🥩 מערכת מכירת בשר</h1>
+        <h1 className="main-title">🥩  מכירת בשר</h1>
       </div>
       
       <form onSubmit={searchCustomer} className="search-form">
