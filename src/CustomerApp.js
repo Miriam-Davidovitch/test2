@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import config from './config';
 
 function CustomerApp() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchValue, setSearchValue] = useState('');
   const [customerData, setCustomerData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [tempWeights, setTempWeights] = useState({});
   const [notReceivedProducts, setNotReceivedProducts] = useState({});
   const [message, setMessage] = useState({ text: '', type: '' });
+  
+  // בדיקה אם זה מנהל (הגיע דרך /admin)
+  const isAdmin = location.pathname === '/admin';
 
   const searchCustomer = async (e) => {
     e.preventDefault();
@@ -91,7 +95,7 @@ function CustomerApp() {
       <form onSubmit={searchCustomer} className="search-form">
         <input
           type="text"
-          placeholder="הכנס טלפון, מייל או מספר הזמנה"
+          placeholder={isAdmin ? "הכנס טלפון, מייל או מספר הזמנה" : "הכנס טלפון או מייל"}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           className="search-input"
