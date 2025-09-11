@@ -71,20 +71,26 @@ function CustomerApp() {
 
   const saveAllWeights = async () => {
     const weightsToSave = Object.keys(tempWeights);
-    if (weightsToSave.length === 0) {
+    const checkboxesToSave = Object.keys(notReceivedProducts);
+    const totalChanges = weightsToSave.length + checkboxesToSave.length;
+    
+    if (totalChanges === 0) {
       setMessage({ text: 'אין שינויים לשמירה', type: 'warning' });
       return;
     }
     
     setLoading(true);
     try {
-      const promises = weightsToSave.map(orderProductId => {
+      // אוספים את כל השינויים - משקלים וcheckboxes
+      const allChangedIds = [...new Set([...weightsToSave, ...checkboxesToSave])];
+      
+      const promises = allChangedIds.map(orderProductId => {
         const product = customerData.orders.flatMap(order => order.products)
           .find(p => p.orderproductid.toString() === orderProductId);
         
         const weightToSend = notReceivedProducts[orderProductId] 
           ? product.avgweight 
-          : tempWeights[orderProductId];
+          : (tempWeights[orderProductId] || product.finalweight || product.avgweight);
         
         return fetch(`${config.API_BASE_URL}${config.ENDPOINTS.UPDATE_WEIGHT}`, {
           method: 'POST',
@@ -103,7 +109,8 @@ function CustomerApp() {
       if (allSuccessful) {
         await searchCustomer({ preventDefault: () => {} });
         setTempWeights({});
-        setMessage({ text: `כל המשקלים נשמרו בהצלחה! (${weightsToSave.length} עדכונים)`, type: 'success' });
+        setNotReceivedProducts({});
+        setMessage({ text: `כל השינויים נשמרו בהצלחה! (${totalChanges} עדכונים)`, type: 'success' });
       } else {
         setMessage({ text: 'חלק מהעדכונים נכשלו. נסה שוב.', type: 'error' });
       }
@@ -177,9 +184,17 @@ function CustomerApp() {
                 </thead>
                 <tbody>
                   {order.products.map(product => {
-                    const currentWeight = tempWeights[product.orderproductid] || product.finalweight || product.avgweight;
+                    // אם סומן כ"לא קיבלתי", המשקל הוא המשקל הממוצע
+                    const isNotReceived = notReceivedProducts[product.orderproductid] !== undefined ? 
+                      notReceivedProducts[product.orderproductid] : (product.notreceived || false);
+                    
+                    const currentWeight = isNotReceived ? 
+                      product.avgweight : 
+                      (tempWeights[product.orderproductid] || product.finalweight || product.avgweight);
+                    
                     const finalPrice = (currentWeight - product.avgweight) * product.priceperkg + product.paidprice;
-                    const hasUnsavedChanges = tempWeights[product.orderproductid] !== undefined;
+                    const hasUnsavedChanges = tempWeights[product.orderproductid] !== undefined || 
+                      (notReceivedProducts[product.orderproductid] !== undefined);
                     
                     return (
                       <tr key={product.orderproductid}>
@@ -237,10 +252,18 @@ function CustomerApp() {
                     <td className="summary-amount">
                       {(() => {
                         const totalDifference = order.products.reduce((sum, product) => {
-                          const currentWeight = tempWeights[product.orderproductid] || product.finalweight || product.avgweight;
+                          // אם סומן כ"לא קיבלתי", המשקל הוא המשקל הממוצע
+                          const isNotReceived = notReceivedProducts[product.orderproductid] !== undefined ? 
+                            notReceivedProducts[product.orderproductid] : (product.notreceived || false);
+                          
+                          const currentWeight = isNotReceived ? 
+                            product.avgweight : 
+                            (tempWeights[product.orderproductid] || product.finalweight || product.avgweight);
+                          
                           const finalPrice = (currentWeight - product.avgweight) * product.priceperkg + product.paidprice;
                           const difference = finalPrice - product.paidprice;
-                          const hasWeight = product.finalweight || tempWeights[product.orderproductid] !== undefined;
+                          const hasWeight = product.finalweight || tempWeights[product.orderproductid] !== undefined || 
+                            (notReceivedProducts[product.orderproductid] !== undefined);
                           return sum + (hasWeight ? difference : 0);
                         }, 0);   
                         if (totalDifference > 0) {
