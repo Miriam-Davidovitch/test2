@@ -18,9 +18,36 @@ function CustomerApp() {
   const searchCustomer = async (e) => {
     e.preventDefault();
     if (!searchValue.trim()) return;
+    
+    // מנקה הודעות קודמות
+    setMessage({ text: '', type: '' });
+    
+    // בדיקה אם משתמש רגיל מנסה לחפש לפי מספר הזמנה (רק מספרים קצרים)
+    if (!isAdmin && /^\d{1,6}$/.test(searchValue.trim())) {
+      setMessage({ text: 'אין לך הרשאה לחפש לפי מספר הזמנה', type: 'error' });
+      setCustomerData(null); // מנקה נתונים קודמים
+      return;
+    }
+    
     setLoading(true);
     try {
-      const res = await fetch(`${config.API_BASE_URL}${config.ENDPOINTS.CUSTOMER}/${encodeURIComponent(searchValue)}`);
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // אם זה מנהל, נוסיף הדר לזיהוי
+      if (isAdmin) {
+        headers['x-user-role'] = 'admin';
+      }
+      
+      let url = `${config.API_BASE_URL}${config.ENDPOINTS.CUSTOMER}/${encodeURIComponent(searchValue)}`;
+      
+      // אם זה מנהל, נוסיף פרמטר בURL במקום header
+      if (isAdmin) {
+        url += '?admin=true';
+      }
+      
+      const res = await fetch(url);
       const data = await res.json();
       if (res.ok) {
         setCustomerData(data);
