@@ -294,7 +294,7 @@ function CustomerApp() {
       <form onSubmit={searchCustomer} className="search-form">
         <input
           type="text"
-          placeholder={isAdmin ? "הכנס טלפון, מייל או מספר הזמנה" : "הכנס טלפון או מייל"}
+          placeholder={isAdmin ? "הכנס טלפון, מייל, ת.ז. או מספר הזמנה" : "הכנס טלפון, מייל או ת.ז."}
           value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
           className="search-input"
