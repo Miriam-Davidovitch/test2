@@ -944,3 +944,51 @@
     font-size: 28px;
   }
 }
+
+/* צ'קבוקס תשלום */
+.payment-status-container {
+  margin-top: 15px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+}
+
+.payment-checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.payment-checkbox {
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+  cursor: pointer;
+  accent-color: #4caf50;
+}
+
+.payment-text {
+  color: #333;
+}
+
+.payment-checkbox:checked + .payment-text {
+  color: #4caf50;
+}
+
+@media (max-width: 768px) {
+  .payment-status-container {
+    padding: 12px;
+  }
+  
+  .payment-checkbox-label {
+    font-size: 14px;
+  }
+  
+  .payment-checkbox {
+    width: 18px;
+    height: 18px;
+  }
+}

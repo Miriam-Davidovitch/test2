@@ -11,6 +11,7 @@ const config = {
     CUSTOMER: '/api/customer',
     CUSTOMER_BY_ID: '/api/customer-by-id',
     UPDATE_WEIGHT: '/api/update-weight',
+    UPDATE_PAYMENT: '/api/update-payment',
     REPORTS: '/api/reports'
   }
 };

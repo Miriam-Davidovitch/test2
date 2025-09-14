@@ -14,6 +14,7 @@ function CustomerApp() {
   const [message, setMessage] = useState({ text: '', type: '' });
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [finalAmount, setFinalAmount] = useState(0);
+  const [paymentStatus, setPaymentStatus] = useState(false);
 
   const [showQrScanner, setShowQrScanner] = useState(false);
   const videoRef = useRef(null);
@@ -34,6 +35,7 @@ function CustomerApp() {
       if (res.ok) {
         setCustomerData(data);
         setTempWeights({});
+        setPaymentStatus(data.customer.שילמתי || false);
         setMessage({ text: 'לקוח נמצא בהצלחה!', type: 'success' });
       } else {
         setMessage({ text: data.error || 'לא נמצא לקוח', type: 'error' });
@@ -147,6 +149,7 @@ function CustomerApp() {
       if (res.ok) {
         setCustomerData(data);
         setTempWeights({});
+        setPaymentStatus(data.customer.שילמתי || false);
       } else {
         setMessage({ text: data.error || 'לא נמצא לקוח', type: 'error' });
         setCustomerData(null);
@@ -162,6 +165,28 @@ function CustomerApp() {
       ...prev,
       [orderProductId]: newWeight
     }));
+  };
+
+  const updatePayment = async (paid) => {
+    try {
+      const res = await fetch(`${config.API_BASE_URL}${config.ENDPOINTS.UPDATE_PAYMENT}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerId: customerData.customer.customerid,
+          paid: paid
+        })
+      });
+      
+      if (res.ok) {
+        setPaymentStatus(paid);
+        setMessage({ text: paid ? 'סומן כשולם' : 'סומן כלא שולם', type: 'success' });
+      } else {
+        setMessage({ text: 'שגיאה בעדכון סטטוס תשלום', type: 'error' });
+      }
+    } catch (err) {
+      setMessage({ text: 'שגיאה בעדכון סטטוס תשלום', type: 'error' });
+    }
   };
 
   const saveAllWeights = async () => {
@@ -526,6 +551,19 @@ function CustomerApp() {
                   </tr>
                 </tfoot>
               </table>
+              
+              {/* צ'קבוקס תשלום */}
+              <div className="payment-status-container">
+                <label className="payment-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={paymentStatus}
+                    onChange={(e) => updatePayment(e.target.checked)}
+                    className="payment-checkbox"
+                  />
+                  <span className="payment-text">שילמתי עבור ההזמנה</span>
+                </label>
+              </div>
             </div>
           ))}
 
