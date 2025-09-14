@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import QrScanner from 'qr-scanner';
 import config from './config';
 
 function CustomerApp() {
@@ -11,42 +12,134 @@ function CustomerApp() {
   const [tempWeights, setTempWeights] = useState({});
   const [notReceivedProducts, setNotReceivedProducts] = useState({});
   const [message, setMessage] = useState({ text: '', type: '' });
-  
+
+  const [showQrScanner, setShowQrScanner] = useState(false);
+  const videoRef = useRef(null);
+  const qrScannerRef = useRef(null);
+
   // בדיקה אם זה מנהל (הגיע דרך /admin)
   const isAdmin = location.pathname === '/admin';
+
+  // פונקציה לחיפוש לקוח לפי Customer ID
+  const searchCustomerById = async (customerId) => {
+    setMessage({ text: '', type: '' });
+    setLoading(true);
+    
+    try {
+      const res = await fetch(`${config.API_BASE_URL}${config.ENDPOINTS.CUSTOMER_BY_ID}/${customerId}`);
+      const data = await res.json();
+      
+      if (res.ok) {
+        setCustomerData(data);
+        setTempWeights({});
+        setMessage({ text: 'לקוח נמצא בהצלחה!', type: 'success' });
+      } else {
+        setMessage({ text: data.error || 'לא נמצא לקוח', type: 'error' });
+        setCustomerData(null);
+      }
+    } catch (err) {
+      setMessage({ text: 'שגיאה בחיפוש לקוח', type: 'error' });
+    }
+    
+    setLoading(false);
+  };
+
+  // פתיחת סורק QR
+  const startQrScanner = async () => {
+    try {
+      setShowQrScanner(true);
+      
+      if (videoRef.current) {
+        qrScannerRef.current = new QrScanner(
+          videoRef.current,
+          (result) => {
+            const customerId = result.data;
+            if (/^\d+$/.test(customerId)) {
+              searchCustomerById(customerId);
+              stopQrScanner();
+            } else {
+              setMessage({ text: 'QR Code לא תקין - חיפוש מספר לקוח', type: 'error' });
+            }
+          },
+          {
+            returnDetailedScanResult: true,
+            highlightScanRegion: true,
+            highlightCodeOutline: true,
+          }
+        );
+        
+        await qrScannerRef.current.start();
+      }
+    } catch (err) {
+      setMessage({ text: 'שגיאה בפתיחת המצלמה', type: 'error' });
+      setShowQrScanner(false);
+    }
+  };
+
+  // סגירת סורק QR
+  const stopQrScanner = () => {
+    if (qrScannerRef.current) {
+      qrScannerRef.current.stop();
+      qrScannerRef.current.destroy();
+      qrScannerRef.current = null;
+    }
+    setShowQrScanner(false);
+  };
+
+  // בדיקה אם יש Customer ID ב-URL (מ-QR Code)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const customerId = urlParams.get('customer');
+    
+    if (customerId && /^\d+$/.test(customerId)) {
+      searchCustomerById(customerId);
+      // מנקה את הפרמטר מה-URL לאחר החיפוש
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // ניקוי כשיוצאים מהרכיב
+  useEffect(() => {
+    return () => {
+      if (qrScannerRef.current) {
+        qrScannerRef.current.stop();
+        qrScannerRef.current.destroy();
+      }
+    };
+  }, []);
 
   const searchCustomer = async (e) => {
     e.preventDefault();
     if (!searchValue.trim()) return;
-    
+
     // מנקה הודעות קודמות
     setMessage({ text: '', type: '' });
-    
+
     // בדיקה אם משתמש רגיל מנסה לחפש לפי מספר הזמנה (רק מספרים קצרים)
     if (!isAdmin && /^\d{1,6}$/.test(searchValue.trim())) {
       setMessage({ text: 'אין לך הרשאה לחפש לפי מספר הזמנה', type: 'error' });
       setCustomerData(null); // מנקה נתונים קודמים
       return;
     }
-    
+
     setLoading(true);
     try {
       const headers = {
         'Content-Type': 'application/json'
       };
-      
+
       // אם זה מנהל, נוסיף הדר לזיהוי
       if (isAdmin) {
         headers['x-user-role'] = 'admin';
       }
-      
+
       let url = `${config.API_BASE_URL}${config.ENDPOINTS.CUSTOMER}/${encodeURIComponent(searchValue)}`;
-      
+
       // אם זה מנהל, נוסיף פרמטר בURL במקום header
       if (isAdmin) {
         url += '?admin=true';
       }
-      
+
       const res = await fetch(url);
       const data = await res.json();
       if (res.ok) {
@@ -73,44 +166,63 @@ function CustomerApp() {
     const weightsToSave = Object.keys(tempWeights);
     const checkboxesToSave = Object.keys(notReceivedProducts);
     const totalChanges = weightsToSave.length + checkboxesToSave.length;
-    
+
     if (totalChanges === 0) {
       setMessage({ text: 'אין שינויים לשמירה', type: 'warning' });
       return;
     }
-    
+
     setLoading(true);
     try {
       // אוספים את כל השינויים - משקלים וcheckboxes
       const allChangedIds = [...new Set([...weightsToSave, ...checkboxesToSave])];
-      
+
       const promises = allChangedIds.map(orderProductId => {
         const product = customerData.orders.flatMap(order => order.products)
           .find(p => p.orderproductid.toString() === orderProductId);
-        
-        const weightToSend = notReceivedProducts[orderProductId] 
-          ? product.avgweight 
+
+        const weightToSend = notReceivedProducts[orderProductId]
+          ? product.avgweight
           : (tempWeights[orderProductId] || product.finalweight || product.avgweight);
-        
+
         return fetch(`${config.API_BASE_URL}${config.ENDPOINTS.UPDATE_WEIGHT}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            orderProductId: parseInt(orderProductId), 
+            orderProductId: parseInt(orderProductId),
             finalWeight: weightToSend,
             notReceived: notReceivedProducts[orderProductId] || false
           })
         });
       });
-      
+
       const results = await Promise.all(promises);
       const allSuccessful = results.every(res => res.ok);
-      
+
       if (allSuccessful) {
-        await searchCustomer({ preventDefault: () => {} });
+        // חישוב הסכום הכולל לאחר השינויים
+        const totalAmount = customerData.orders.reduce((sum, order) => {
+          return sum + order.products.reduce((orderSum, product) => {
+            const isNotReceived = notReceivedProducts[product.orderproductid] !== undefined ?
+              notReceivedProducts[product.orderproductid] : (product.notreceived || false);
+            
+            const currentWeight = isNotReceived ?
+              product.avgweight :
+              (tempWeights[product.orderproductid] || product.finalweight || product.avgweight);
+            
+            const finalPrice = (currentWeight - product.avgweight) * product.priceperkg + product.paidprice;
+            const difference = finalPrice - product.paidprice;
+            const hasWeight = product.finalweight || tempWeights[product.orderproductid] !== undefined ||
+              (notReceivedProducts[product.orderproductid] !== undefined);
+            
+            return orderSum + (hasWeight ? difference : 0);
+          }, 0);
+        }, 0);
+
+        setMessage({ text: `כל השינויים נשמרו בהצלחה! (${totalChanges} עדכונים)`, type: 'success' });
         setTempWeights({});
         setNotReceivedProducts({});
-        setMessage({ text: `כל השינויים נשמרו בהצלחה! (${totalChanges} עדכונים)`, type: 'success' });
+        
       } else {
         setMessage({ text: 'חלק מהעדכונים נכשלו. נסה שוב.', type: 'error' });
       }
@@ -125,7 +237,7 @@ function CustomerApp() {
       <div className="customer-header">
         <h1 className="main-title">🥩  מכירת בשר</h1>
       </div>
-      
+
       <form onSubmit={searchCustomer} className="search-form">
         <input
           type="text"
@@ -134,7 +246,7 @@ function CustomerApp() {
           onChange={(e) => setSearchValue(e.target.value)}
           className="search-input"
         />
-        <button 
+        <button
           type="submit"
           disabled={loading}
           className="search-button"
@@ -143,10 +255,30 @@ function CustomerApp() {
         </button>
       </form>
 
+      <div className="qr-section">
+        <p className="qr-text">או סרוק את ה-QR Code שלך:</p>
+        {!showQrScanner ? (
+          <button
+            onClick={startQrScanner}
+            disabled={loading}
+            className="qr-button"
+          >
+            📱 סרוק QR Code
+          </button>
+        ) : (
+          <div className="qr-scanner-container">
+            <video ref={videoRef} className="qr-video" />
+            <button onClick={stopQrScanner} className="qr-close-button">
+              סגור סורק
+            </button>
+          </div>
+        )}
+      </div>
+
       {message.text && (
         <div className={`message message-${message.type}`}>
           <span>{message.text}</span>
-          <button 
+          <button
             onClick={() => setMessage({ text: '', type: '' })}
             className="message-close-btn"
           >
@@ -169,7 +301,7 @@ function CustomerApp() {
           {customerData.orders.map(order => (
             <div key={order.orderid} className="order-container">
               <h4 className="order-title">הזמנה #{order.orderid} - {new Date(order.orderdate).toLocaleDateString('he-IL')}</h4>
-              
+
               <table className="products-table">
                 <thead>
                   <tr className="table-header">
@@ -185,17 +317,17 @@ function CustomerApp() {
                 <tbody>
                   {order.products.map(product => {
                     // אם סומן כ"לא קיבלתי", המשקל הוא המשקל הממוצע
-                    const isNotReceived = notReceivedProducts[product.orderproductid] !== undefined ? 
+                    const isNotReceived = notReceivedProducts[product.orderproductid] !== undefined ?
                       notReceivedProducts[product.orderproductid] : (product.notreceived || false);
-                    
-                    const currentWeight = isNotReceived ? 
-                      product.avgweight : 
+
+                    const currentWeight = isNotReceived ?
+                      product.avgweight :
                       (tempWeights[product.orderproductid] || product.finalweight || product.avgweight);
-                    
+
                     const finalPrice = (currentWeight - product.avgweight) * product.priceperkg + product.paidprice;
-                    const hasUnsavedChanges = tempWeights[product.orderproductid] !== undefined || 
+                    const hasUnsavedChanges = tempWeights[product.orderproductid] !== undefined ||
                       (notReceivedProducts[product.orderproductid] !== undefined);
-                    
+
                     return (
                       <tr key={product.orderproductid}>
                         <td className="table-cell">{product.productname}</td>
@@ -207,17 +339,25 @@ function CustomerApp() {
                             <input
                               type="number"
                               step="0.01"
-                              value={tempWeights[product.orderproductid] || product.finalweight || ''}
+                              value={tempWeights[product.orderproductid] !== undefined ? tempWeights[product.orderproductid] : (product.finalweight || '')}
                               placeholder="הכנס משקל"
                               className="weight-input"
-                              disabled={notReceivedProducts[product.orderproductid] !== undefined ? notReceivedProducts[product.orderproductid] : (product.notreceived || false)}
+                              disabled={notReceivedProducts[product.orderproductid] !== undefined ?
+                                notReceivedProducts[product.orderproductid] : (product.notreceived || false)}
+                              onFocus={(e) => e.target.select()}
                               onChange={(e) => {
                                 const value = e.target.value;
-                                if (value) {
-                                  updateTempWeight(product.orderproductid, parseFloat(value));
+                                if (value === '') {
+                                  updateTempWeight(product.orderproductid, '');
+                                } else {
+                                  const numValue = parseFloat(value);
+                                  if (!isNaN(numValue)) {
+                                    updateTempWeight(product.orderproductid, numValue);
+                                  }
                                 }
                               }}
                             />
+
                           </div>
                         </td>
                         <td className="table-cell">
@@ -253,19 +393,19 @@ function CustomerApp() {
                       {(() => {
                         const totalDifference = order.products.reduce((sum, product) => {
                           // אם סומן כ"לא קיבלתי", המשקל הוא המשקל הממוצע
-                          const isNotReceived = notReceivedProducts[product.orderproductid] !== undefined ? 
+                          const isNotReceived = notReceivedProducts[product.orderproductid] !== undefined ?
                             notReceivedProducts[product.orderproductid] : (product.notreceived || false);
-                          
-                          const currentWeight = isNotReceived ? 
-                            product.avgweight : 
+
+                          const currentWeight = isNotReceived ?
+                            product.avgweight :
                             (tempWeights[product.orderproductid] || product.finalweight || product.avgweight);
-                          
+
                           const finalPrice = (currentWeight - product.avgweight) * product.priceperkg + product.paidprice;
                           const difference = finalPrice - product.paidprice;
-                          const hasWeight = product.finalweight || tempWeights[product.orderproductid] !== undefined || 
+                          const hasWeight = product.finalweight || tempWeights[product.orderproductid] !== undefined ||
                             (notReceivedProducts[product.orderproductid] !== undefined);
                           return sum + (hasWeight ? difference : 0);
-                        }, 0);   
+                        }, 0);
                         if (totalDifference > 0) {
                           return <span className="total-debt">חוב: ₪{totalDifference.toFixed(2)}</span>;
                         } else if (totalDifference < 0) {
@@ -273,20 +413,20 @@ function CustomerApp() {
                         } else {
                           return <span className="total-balanced">מאוזן</span>;
                         }
-                      })()} 
+                      })()}
                     </td>
                   </tr>
                 </tfoot>
               </table>
             </div>
           ))}
-          
+
           {(Object.keys(tempWeights).length > 0 || Object.keys(notReceivedProducts).length > 0) && (
             <div className="save-changes-container">
               <p className="save-changes-text">
                 יש לך {Object.keys(tempWeights).length + Object.keys(notReceivedProducts).length} שינויים שלא נשמרו
               </p>
-              <button 
+              <button
                 onClick={saveAllWeights}
                 disabled={loading}
                 className="save-all-button"

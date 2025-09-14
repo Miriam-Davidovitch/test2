@@ -9,6 +9,7 @@ const config = {
   // נתיבי API
   ENDPOINTS: {
     CUSTOMER: '/api/customer',
+    CUSTOMER_BY_ID: '/api/customer-by-id',
     UPDATE_WEIGHT: '/api/update-weight',
     REPORTS: '/api/reports'
   }

@@ -192,24 +192,87 @@
     padding: 10px;
   }
   
+  .search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
   .search-input {
-    width: 250px;
-    margin-left: 5px;
+    width: 100%;
+    margin-left: 0;
+    box-sizing: border-box;
+  }
+  
+  .search-button {
+    width: 100%;
   }
   
   .products-table {
-    font-size: 14px;
+    font-size: 12px;
+    overflow-x: auto;
+    display: block;
+    white-space: nowrap;
+  }
+  
+  .products-table thead,
+  .products-table tbody,
+  .products-table tr {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
   }
   
   .table-cell, .table-header th {
-    padding: 4px;
+    padding: 6px 2px;
+    font-size: 11px;
   }
   
   .weight-input {
-    width: 60px;
+    width: 50px;
+    font-size: 12px;
   }
   
   .save-all-button {
+    padding: 12px 20px;
+    font-size: 16px;
+    width: 100%;
+  }
+  
+  .customer-info {
+    padding: 15px;
+  }
+  
+  .order-container {
+    padding: 10px;
+  }
+}
+
+/* רספונסיביות קיצונית למסכים קטנים */
+@media (max-width: 480px) {
+  .main-container {
+    padding: 5px;
+  }
+  
+  .main-title {
+    font-size: 24px;
+  }
+  
+  .products-table {
+    font-size: 10px;
+  }
+  
+  .table-cell, .table-header th {
+    padding: 4px 1px;
+    font-size: 10px;
+  }
+  
+  .weight-input {
+    width: 40px;
+    padding: 2px;
+  }
+  
+  .qr-button {
     padding: 12px 20px;
     font-size: 16px;
   }
@@ -536,5 +599,348 @@
   
   .report-card p {
     font-size: 13px;
+  }
+}
+
+/* עיצוב QR Scanner */
+.qr-section {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  border: 2px dashed #d32f2f;
+}
+
+.qr-text {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #333;
+}
+
+.qr-button {
+  padding: 15px 30px;
+  font-size: 18px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.qr-button:hover {
+  background-color: #1976d2;
+  transform: translateY(-2px);
+}
+
+.qr-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.qr-scanner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.qr-video {
+  width: 300px;
+  height: 300px;
+  border: 3px solid #d32f2f;
+  border-radius: 10px;
+  background-color: #000;
+}
+
+.qr-close-button {
+  padding: 10px 20px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.qr-close-button:hover {
+  background-color: #d32f2f;
+}
+
+@media (max-width: 768px) {
+  .qr-video {
+    width: 250px;
+    height: 250px;
+  }
+  
+  .qr-section {
+    padding: 15px;
+  }
+}
+
+/* עיצוב יצירת QR Codes */
+.qr-generator-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.qr-generator-btn {
+  background-color: #2196f3 !important;
+  margin-right: 15px;
+}
+
+.qr-generator-btn:hover {
+  background-color: #1976d2 !important;
+}
+
+.manual-qr-section {
+  background-color: #f8f9fa;
+  padding: 25px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 2px solid #e9ecef;
+}
+
+.manual-qr-section h3 {
+  margin-top: 0;
+  color: #333;
+  text-align: center;
+}
+
+.manual-inputs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.manual-input {
+  padding: 12px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+  width: 200px;
+}
+
+.manual-input:focus {
+  border-color: #2196f3;
+  outline: none;
+}
+
+.generate-qr-btn {
+  padding: 12px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.generate-qr-btn:hover {
+  background-color: #45a049;
+}
+
+.qr-instructions {
+  background-color: #e3f2fd;
+  padding: 20px;
+  border-radius: 10px;
+  margin-top: 30px;
+  border-left: 4px solid #2196f3;
+}
+
+.qr-instructions h3 {
+  margin-top: 0;
+  color: #1976d2;
+}
+
+.qr-instructions ol {
+  margin: 15px 0;
+  padding-right: 20px;
+}
+
+.qr-instructions li {
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .manual-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .manual-input {
+    width: 100%;
+  }
+  
+  .qr-generator-container {
+    padding: 15px;
+  }
+}
+
+/* הודעת סיום יפה */
+.final-message-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.final-message-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.4s ease;
+}
+
+.final-message-icon {
+  width: 80px;
+  height: 80px;
+  background: #4caf50;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  color: white;
+  margin: 0 auto 20px;
+  animation: checkmark 0.6s ease 0.2s both;
+}
+
+.final-message-title {
+  font-size: 28px;
+  color: #333;
+  margin: 0 0 10px 0;
+  font-weight: bold;
+}
+
+.final-message-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 30px 0;
+}
+
+.final-amount-section {
+  background: #f8f9fa;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 20px 0;
+}
+
+.amount-label {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.amount-value {
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.amount-value.debt {
+  color: #d32f2f;
+}
+
+.amount-value.credit {
+  color: #4caf50;
+}
+
+.amount-value.balanced {
+  color: #333;
+  font-size: 18px;
+}
+
+.final-message-footer {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #999;
+}
+
+.final-message-footer p {
+  margin: 0 0 15px 0;
+}
+
+.close-page-btn {
+  padding: 10px 20px;
+  background-color: #666;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.close-page-btn:hover {
+  background-color: #555;
+}
+
+/* אנימציות */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* רספונסיביות להודעת סיום */
+@media (max-width: 768px) {
+  .final-message-modal {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .final-message-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+  }
+  
+  .final-message-title {
+    font-size: 24px;
+  }
+  
+  .amount-value {
+    font-size: 28px;
   }
 }

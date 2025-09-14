@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import CustomerApp from './CustomerApp';
+import QRGenerator from './QRGenerator';
 import config from './config';
 
 function AdminApp() {
@@ -80,6 +81,12 @@ function AdminApp() {
           >
             עדכון פרטים ללקוחות
           </button>
+          <button 
+            onClick={() => setCurrentView('qr-generator')}
+            className="admin-action-btn qr-generator-btn"
+          >
+            📱 יצירת QR Codes ללקוחות
+          </button>
         </div>
       </div>
     </div>
@@ -100,10 +107,26 @@ function AdminApp() {
     </div>
   );
 
+  const renderQRGeneratorPage = () => (
+    <div>
+      <div className="admin-nav-header">
+        <h2>יצירת QR Codes ללקוחות</h2>
+        <button 
+          onClick={() => setCurrentView('reports')}
+          className="back-btn"
+        >
+          חזור לדוחות
+        </button>
+      </div>
+      <QRGenerator />
+    </div>
+  );
+
   return (
     <>
       {currentView === 'reports' && renderReportsPage()}
       {currentView === 'customer-update' && renderCustomerUpdatePage()}
+      {currentView === 'qr-generator' && renderQRGeneratorPage()}
     </>
   );
 }
