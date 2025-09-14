@@ -4,13 +4,15 @@
   font-family: Arial, sans-serif;
   max-width: 1000px;
   margin: 0 auto;
+  padding-bottom: 60px;
 }
 
 /* כותרת ראשית */
 .main-title {
   text-align: center;
-  color: #d32f2f;
+  color: #2c3e50;
   margin-bottom: 30px;
+  font-weight: 500;
 }
 
 /* טופס חיפוש */
@@ -33,59 +35,65 @@
 .search-button {
   padding: 12px 20px;
   font-size: 16px;
-  background-color: #d32f2f;
+  background-color: #34495e;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 3px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .search-button:hover {
-  background-color: #b71c1c;
+  background-color: #2c3e50;
 }
 
 .search-button:disabled {
-  background-color: #ccc;
+  background-color: #bdc3c7;
   cursor: not-allowed;
 }
 
 /* קוביית פרטי לקוח */
 .customer-info {
-  background-color: #f5f5f5;
+  background-color: #ffffff;
   padding: 20px;
-  border-radius: 10px;
+  border: 1px solid #ecf0f1;
+  border-radius: 4px;
   margin-bottom: 20px;
 }
 
 .customer-info h2 {
   margin-top: 0;
-  color: #333;
+  color: #2c3e50;
+  font-weight: 500;
 }
 
 .customer-info p {
   margin: 8px 0;
   font-size: 16px;
+  color: #34495e;
 }
 
 /* כותרת הזמנות */
 .orders-title {
-  color: #333;
+  color: #2c3e50;
   margin-bottom: 20px;
+  font-weight: 500;
 }
 
 /* מיכל הזמנה */
 .order-container {
-  border: 1px solid #ddd;
+  border: 1px solid #ecf0f1;
   padding: 15px;
   margin-bottom: 15px;
-  border-radius: 5px;
-  background-color: white;
+  border-radius: 4px;
+  background-color: #ffffff;
 }
 
 /* כותרת הזמנה */
 .order-title {
-  color: #d32f2f;
+  color: #34495e;
   margin-bottom: 15px;
+  font-weight: 500;
 }
 
 /* טבלת מוצרים */
@@ -97,21 +105,23 @@
 
 /* ראש טבלה */
 .table-header {
-  background-color: #e0e0e0;
+  background-color: #f8f9fa;
 }
 
 .table-header th {
-  border: 1px solid #ccc;
-  padding: 8px;
-  font-weight: bold;
+  border: 1px solid #ecf0f1;
+  padding: 12px 8px;
+  font-weight: 500;
   text-align: center;
+  color: #2c3e50;
 }
 
 /* תאי טבלה */
 .table-cell {
-  border: 1px solid #ccc;
-  padding: 8px;
+  border: 1px solid #ecf0f1;
+  padding: 12px 8px;
   text-align: center;
+  color: #34495e;
 }
 
 /* שדה קלט משקל */
@@ -161,26 +171,27 @@
 
 /* כפתור שמירה כללי */
 .save-all-button {
-  padding: 15px 30px;
+  padding: 18px 36px;
   font-size: 18px;
-  background-color: #4caf50;
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  font-weight: bold;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
   transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .save-all-button:hover {
-  background-color: #45a049;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(72, 187, 120, 0.5);
 }
 
 .save-all-button:disabled {
-  background-color: #ccc;
+  background: #bdc3c7;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -343,36 +354,41 @@
 
 /* הודעות מערכת */
 .message {
-  padding: 15px;
-  margin: 20px 0;
-  border-radius: 8px;
+  padding: 12px 16px;
+  margin: 16px 0;
+  border-radius: 3px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-left: 3px solid;
 }
 
 .message-success {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
+  background-color: #f8fff9;
+  color: #27ae60;
+  border-left-color: #27ae60;
+  border: 1px solid #d5f4e6;
 }
 
 .message-error {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #fef9f9;
+  color: #e74c3c;
+  border-left-color: #e74c3c;
   border: 1px solid #f5c6cb;
 }
 
 .message-warning {
-  background-color: #fff3cd;
-  color: #856404;
-  border: 1px solid #ffeaa7;
+  background-color: #fffef7;
+  color: #f39c12;
+  border-left-color: #f39c12;
+  border: 1px solid #fdeaa7;
 }
 
 .message-info {
-  background-color: #d1ecf1;
-  color: #0c5460;
-  border: 1px solid #bee5eb;
+  background-color: #f8f9fa;
+  color: #34495e;
+  border-left-color: #34495e;
+  border: 1px solid #dee2e6;
 }
 
 .message-close-btn {
@@ -546,44 +562,56 @@
 }
 
 .report-card {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-radius: 15px;
-  padding: 30px 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f7fafc 100%);
+  border: 2px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 32px 24px;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  border: 2px solid transparent;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
 }
 
 .report-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  border-color: #d32f2f;
+  border-color: #667eea;
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.2);
+  transform: translateY(-4px);
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
 }
 
 .report-icon {
   font-size: 48px;
-  margin-bottom: 15px;
+  margin-bottom: 16px;
   display: block;
+  opacity: 0.8;
+  transition: all 0.3s ease;
 }
 
 .report-card h3 {
-  margin: 15px 0 10px 0;
-  font-size: 18px;
-  font-weight: bold;
+  margin: 16px 0 12px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a365d;
+  transition: color 0.3s ease;
 }
 
 .report-card p {
   margin: 0;
   font-size: 14px;
-  opacity: 0.8;
+  color: #4a5568;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
-.report-card:hover p {
+.report-card:hover .report-icon {
   opacity: 1;
+  transform: scale(1.1);
+}
+
+.report-card:hover h3,
+.report-card:hover p {
+  color: white;
 }
 
 .admin-actions {
@@ -634,25 +662,30 @@
 }
 
 .qr-button {
-  padding: 15px 30px;
+  padding: 16px 32px;
   font-size: 18px;
-  background-color: #2196f3;
+  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(66, 153, 225, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .qr-button:hover {
-  background-color: #1976d2;
   transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(66, 153, 225, 0.5);
 }
 
 .qr-button:disabled {
-  background-color: #ccc;
+  background: #bdc3c7;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
 }
 
 .qr-scanner-container {
@@ -1005,5 +1038,62 @@
   .payment-checkbox {
     width: 18px;
     height: 18px;
+  }
+}
+
+/* לוגו בתחתית העמוד */
+.footer-logo {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-align: center;
+  padding: 12px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  box-shadow: 0 -4px 20px rgba(102, 126, 234, 0.3);
+  z-index: 999;
+  border-top: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.footer-logo .company-name {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.footer-logo .contact-info {
+  font-size: 11px;
+  opacity: 0.9;
+  font-weight: 500;
+  color: rgba(255,255,255,0.9);
+}
+
+/* מרווח תחתון לתוכן כדי שלא יכסה הלוגו */
+.main-container {
+  padding-bottom: 60px;
+}
+
+@media (max-width: 768px) {
+  .footer-logo {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .footer-logo .company-name {
+    font-size: 13px;
+  }
+  
+  .footer-logo .contact-info {
+    font-size: 9px;
+  }
+  
+  .main-container {
+    padding-bottom: 50px;
   }
 }

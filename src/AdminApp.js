@@ -39,7 +39,7 @@ function AdminApp() {
   const renderReportsPage = () => (
     <div className="main-container" dir="rtl">
       <div className="header">
-        <h1 className="main-title">🥩 פאנל מנהל - דוחות</h1>
+        <h1 className="main-title">פאנל מנהל - דוחות</h1>
         <button onClick={() => navigate('/')} className="exit-btn">
           יציאה
         </button>
@@ -85,9 +85,15 @@ function AdminApp() {
             onClick={() => setCurrentView('qr-generator')}
             className="admin-action-btn qr-generator-btn"
           >
-            📱 יצירת QR Codes ללקוחות
+יצירת QR Codes ללקוחות
           </button>
         </div>
+      </div>
+      
+      {/* לוגו בתחתית */}
+      <div className="footer-logo">
+        <div className="company-name">מרים - פתרונות מתקדמים</div>
+        <div className="contact-info">0583217918 | a025838259@gmail.com</div>
       </div>
     </div>
   );
@@ -104,6 +110,12 @@ function AdminApp() {
         </button>
       </div>
       <CustomerApp />
+      
+      {/* לוגו בתחתית */}
+      <div className="footer-logo">
+        <div className="company-name">מרים - פתרונות מתקדמים</div>
+        <div className="contact-info">0583217918 | a025838259@gmail.com</div>
+      </div>
     </div>
   );
 
@@ -119,6 +131,12 @@ function AdminApp() {
         </button>
       </div>
       <QRGenerator />
+      
+      {/* לוגו בתחתית */}
+      <div className="footer-logo">
+        <div className="company-name">מרים - פתרונות מתקדמים</div>
+        <div className="contact-info">0583217918 | a025838259@gmail.com</div>
+      </div>
     </div>
   );
 

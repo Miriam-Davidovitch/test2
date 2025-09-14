@@ -15,6 +15,7 @@ function CustomerApp() {
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [finalAmount, setFinalAmount] = useState(0);
   const [paymentStatus, setPaymentStatus] = useState(false);
+  const [originalPaymentStatus, setOriginalPaymentStatus] = useState(false);
 
   const [showQrScanner, setShowQrScanner] = useState(false);
   const videoRef = useRef(null);
@@ -35,7 +36,9 @@ function CustomerApp() {
       if (res.ok) {
         setCustomerData(data);
         setTempWeights({});
-        setPaymentStatus(data.customer.שילמתי || false);
+        const paymentValue = data.customer.שילמתי || false;
+        setPaymentStatus(paymentValue);
+        setOriginalPaymentStatus(paymentValue);
         setMessage({ text: 'לקוח נמצא בהצלחה!', type: 'success' });
       } else {
         setMessage({ text: data.error || 'לא נמצא לקוח', type: 'error' });
@@ -149,7 +152,9 @@ function CustomerApp() {
       if (res.ok) {
         setCustomerData(data);
         setTempWeights({});
-        setPaymentStatus(data.customer.שילמתי || false);
+        const paymentValue = data.customer.שילמתי || false;
+        setPaymentStatus(paymentValue);
+        setOriginalPaymentStatus(paymentValue);
       } else {
         setMessage({ text: data.error || 'לא נמצא לקוח', type: 'error' });
         setCustomerData(null);
@@ -167,26 +172,8 @@ function CustomerApp() {
     }));
   };
 
-  const updatePayment = async (paid) => {
-    try {
-      const res = await fetch(`${config.API_BASE_URL}${config.ENDPOINTS.UPDATE_PAYMENT}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerId: customerData.customer.customerid,
-          paid: paid
-        })
-      });
-      
-      if (res.ok) {
-        setPaymentStatus(paid);
-        setMessage({ text: paid ? 'סומן כשולם' : 'סומן כלא שולם', type: 'success' });
-      } else {
-        setMessage({ text: 'שגיאה בעדכון סטטוס תשלום', type: 'error' });
-      }
-    } catch (err) {
-      setMessage({ text: 'שגיאה בעדכון סטטוס תשלום', type: 'error' });
-    }
+  const updatePayment = (paid) => {
+    setPaymentStatus(paid);
   };
 
   // בדיקה אם כל המוצרים עודכנו
@@ -209,7 +196,8 @@ function CustomerApp() {
     
     const weightsToSave = Object.keys(tempWeights);
     const checkboxesToSave = Object.keys(notReceivedProducts);
-    const totalChanges = weightsToSave.length + checkboxesToSave.length;
+    const hasPaymentChange = paymentStatus !== originalPaymentStatus;
+    const totalChanges = weightsToSave.length + checkboxesToSave.length + (hasPaymentChange ? 1 : 0);
 
     if (totalChanges === 0) {
       setMessage({ text: 'אין שינויים לשמירה', type: 'warning' });
@@ -221,7 +209,8 @@ function CustomerApp() {
       // אוספים את כל השינויים - משקלים וcheckboxes
       const allChangedIds = [...new Set([...weightsToSave, ...checkboxesToSave])];
 
-      const promises = allChangedIds.map(orderProductId => {
+      // איחוד כל העדכונים לקריאה אחת
+      const updatesData = allChangedIds.map(orderProductId => {
         const product = customerData.orders.flatMap(order => order.products)
           .find(p => p.orderproductid.toString() === orderProductId);
 
@@ -229,19 +218,25 @@ function CustomerApp() {
           ? product.avgweight
           : (tempWeights[orderProductId] || product.finalweight || product.avgweight);
 
-        return fetch(`${config.API_BASE_URL}${config.ENDPOINTS.UPDATE_WEIGHT}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            orderProductId: parseInt(orderProductId),
-            finalWeight: weightToSend,
-            notReceived: notReceivedProducts[orderProductId] || false
-          })
-        });
+        return {
+          orderProductId: parseInt(orderProductId),
+          finalWeight: weightToSend,
+          notReceived: notReceivedProducts[orderProductId] || false
+        };
       });
 
-      const results = await Promise.all(promises);
-      const allSuccessful = results.every(res => res.ok);
+      // קריאה אחת עם כל העדכונים + סטטוס תשלום
+      const res = await fetch(`${config.API_BASE_URL}${config.ENDPOINTS.UPDATE_WEIGHT}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          updates: updatesData,
+          customerId: customerData.customer.customerid,
+          paymentStatus: paymentStatus
+        })
+      });
+
+      const allSuccessful = res.ok;
 
       if (allSuccessful) {
         // חישוב הסכום הכולל לאחר השינויים
@@ -273,6 +268,7 @@ function CustomerApp() {
           setCustomerData(null);
           setTempWeights({});
           setNotReceivedProducts({});
+          setOriginalPaymentStatus(paymentStatus);
           setShowFinalMessage(false);
           setSearchValue('');
           setMessage({ text: '', type: '' });
@@ -297,7 +293,7 @@ function CustomerApp() {
   return (
     <div className="main-container" dir="rtl">
       <div className="customer-header">
-        <h1 className="main-title">🥩  מכירת בשר</h1>
+        <h1 className="main-title">מכירת בשר</h1>
       </div>
 
       <form onSubmit={searchCustomer} className="search-form">
@@ -325,7 +321,7 @@ function CustomerApp() {
             disabled={loading}
             className="qr-button"
           >
-            📱 סרוק QR Code
+סרוק QR Code
           </button>
         ) : (
           <div className="qr-scanner-container">
@@ -384,6 +380,7 @@ function CustomerApp() {
                   setCustomerData(null);
                   setTempWeights({});
                   setNotReceivedProducts({});
+                  setOriginalPaymentStatus(paymentStatus);
                   setShowFinalMessage(false);
                   setSearchValue('');
                   setMessage({ text: '', type: '' });
@@ -553,10 +550,10 @@ function CustomerApp() {
             </div>
           ))}
 
-          {(Object.keys(tempWeights).length > 0 || Object.keys(notReceivedProducts).length > 0) && (
+          {(Object.keys(tempWeights).length > 0 || Object.keys(notReceivedProducts).length > 0 || paymentStatus !== originalPaymentStatus) && (
             <div className="save-changes-container">
               <p className="save-changes-text">
-                יש לך {Object.keys(tempWeights).length + Object.keys(notReceivedProducts).length} שינויים שלא נשמרו
+                יש לך {Object.keys(tempWeights).length + Object.keys(notReceivedProducts).length + (paymentStatus !== originalPaymentStatus ? 1 : 0)} שינויים שלא נשמרו
               </p>
               <button
                 onClick={saveAllWeights}
@@ -567,6 +564,14 @@ function CustomerApp() {
               </button>
             </div>
           )}
+        </div>
+      )}
+      
+      {/* לוגו בתחתית - רק אם לא בתוך מנהל */}
+      {!isAdmin && (
+        <div className="footer-logo">
+          <div className="company-name">מרים - פתרונות מתקדמים</div>
+          <div className="contact-info">0583217918 | a025838259@gmail.com</div>
         </div>
       )}
     </div>
