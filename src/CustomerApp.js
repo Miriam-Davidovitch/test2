@@ -12,6 +12,8 @@ function CustomerApp() {
   const [tempWeights, setTempWeights] = useState({});
   const [notReceivedProducts, setNotReceivedProducts] = useState({});
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [showFinalMessage, setShowFinalMessage] = useState(false);
+  const [finalAmount, setFinalAmount] = useState(0);
 
   const [showQrScanner, setShowQrScanner] = useState(false);
   const videoRef = useRef(null);
@@ -163,6 +165,39 @@ function CustomerApp() {
   };
 
   const saveAllWeights = async () => {
+    // בדיקה שכל המוצרים עודכנו
+    const unupdatedProducts = [];
+    
+    customerData.orders.forEach(order => {
+      order.products.forEach(product => {
+        const hasUpdatedWeight = tempWeights[product.orderproductid] !== undefined;
+        const hasUpdatedCheckbox = notReceivedProducts[product.orderproductid] !== undefined;
+        const finalWeightEqualsAvg = product.finalweight === product.avgweight;
+        
+        console.log(`מוצר: ${product.productname}`);
+        console.log(`finalweight: ${product.finalweight}, avgweight: ${product.avgweight}`);
+        console.log(`finalWeightEqualsAvg: ${finalWeightEqualsAvg}`);
+        console.log(`hasUpdatedWeight: ${hasUpdatedWeight}`);
+        console.log(`hasUpdatedCheckbox: ${hasUpdatedCheckbox}`);
+        
+        // אם המשקל הסופי שווה לממוצע (לא עודכן) ולא עדכן עכשיו
+        if (finalWeightEqualsAvg && !hasUpdatedWeight && !hasUpdatedCheckbox) {
+          console.log(`מוצר לא מעודכן: ${product.productname}`);
+          unupdatedProducts.push(product.productname);
+        }
+      });
+    });
+    
+    console.log(`מוצרים לא מעודכנים:`, unupdatedProducts);
+    
+    if (unupdatedProducts.length > 0) {
+      setMessage({ 
+        text: `שים לב! יש מוצרים שלא עדכנת לגביהם: ${unupdatedProducts.join(', ')}. אנא עדכן את המשקל או סמן "לא קבלתי מוצר".`, 
+        type: 'warning' 
+      });
+      return;
+    }
+    
     const weightsToSave = Object.keys(tempWeights);
     const checkboxesToSave = Object.keys(notReceivedProducts);
     const totalChanges = weightsToSave.length + checkboxesToSave.length;
@@ -219,9 +254,27 @@ function CustomerApp() {
           }, 0);
         }, 0);
 
-        setMessage({ text: `כל השינויים נשמרו בהצלחה! (${totalChanges} עדכונים)`, type: 'success' });
-        setTempWeights({});
-        setNotReceivedProducts({});
+        // הצגת הודעה יפה עם הסכום
+        setFinalAmount(totalAmount);
+        setShowFinalMessage(true);
+        
+        // חזרה לדף הבית אחרי 4 שניות (ניקוי כל הנתונים)
+        setTimeout(() => {
+          // ניקוי כל הנתונים
+          setCustomerData(null);
+          setTempWeights({});
+          setNotReceivedProducts({});
+          setShowFinalMessage(false);
+          setSearchValue('');
+          setMessage({ text: '', type: '' });
+          
+          // חזרה לדף הבית
+          if (isAdmin) {
+            navigate('/admin?key=admin2024');
+          } else {
+            navigate('/');
+          }
+        }, 4000);
         
       } else {
         setMessage({ text: 'חלק מהעדכונים נכשלו. נסה שוב.', type: 'error' });
@@ -284,6 +337,61 @@ function CustomerApp() {
           >
             ×
           </button>
+        </div>
+      )}
+
+      {/* הודעת סיום יפה */}
+      {showFinalMessage && (
+        <div className="final-message-overlay">
+          <div className="final-message-modal">
+            <div className="final-message-icon">✓</div>
+            <h2 className="final-message-title">תודה!</h2>
+            <p className="final-message-subtitle">השינויים נשמרו בהצלחה</p>
+            
+            <div className="final-amount-section">
+              {finalAmount > 0 ? (
+                <>
+                  <div className="amount-label">סכום לתשלום:</div>
+                  <div className="amount-value debt">₪{finalAmount.toFixed(2)}</div>
+                </>
+              ) : finalAmount < 0 ? (
+                <>
+                  <div className="amount-label">סכום להחזר:</div>
+                  <div className="amount-value credit">₪{Math.abs(finalAmount).toFixed(2)}</div>
+                </>
+              ) : (
+                <>
+                  <div className="amount-label">החשבון מאוזן</div>
+                  <div className="amount-value balanced">אין סכום לתשלום</div>
+                </>
+              )}
+            </div>
+            
+            <div className="final-message-footer">
+              <p>חזרה לדף הבית בעוד מספר שניות...</p>
+              <button 
+                onClick={() => {
+                  // ניקוי מיידי
+                  setCustomerData(null);
+                  setTempWeights({});
+                  setNotReceivedProducts({});
+                  setShowFinalMessage(false);
+                  setSearchValue('');
+                  setMessage({ text: '', type: '' });
+                  
+                  // חזרה לדף הבית
+                  if (isAdmin) {
+                    navigate('/admin?key=admin2024');
+                  } else {
+                    navigate('/');
+                  }
+                }}
+                className="close-page-btn"
+              >
+                חזר לדף הבית
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
