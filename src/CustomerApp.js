@@ -189,39 +189,23 @@ function CustomerApp() {
     }
   };
 
-  const saveAllWeights = async () => {
-    // בדיקה שכל המוצרים עודכנו
-    const unupdatedProducts = [];
+  // בדיקה אם כל המוצרים עודכנו
+  const areAllProductsUpdated = () => {
+    if (!customerData) return false;
     
-    customerData.orders.forEach(order => {
-      order.products.forEach(product => {
+    return customerData.orders.every(order => 
+      order.products.every(product => {
         const hasUpdatedWeight = tempWeights[product.orderproductid] !== undefined;
         const hasUpdatedCheckbox = notReceivedProducts[product.orderproductid] !== undefined;
         const finalWeightEqualsAvg = product.finalweight === product.avgweight;
+        const hasExistingNotReceived = product.notreceived === true;
         
-        console.log(`מוצר: ${product.productname}`);
-        console.log(`finalweight: ${product.finalweight}, avgweight: ${product.avgweight}`);
-        console.log(`finalWeightEqualsAvg: ${finalWeightEqualsAvg}`);
-        console.log(`hasUpdatedWeight: ${hasUpdatedWeight}`);
-        console.log(`hasUpdatedCheckbox: ${hasUpdatedCheckbox}`);
-        
-        // אם המשקל הסופי שווה לממוצע (לא עודכן) ולא עדכן עכשיו
-        if (finalWeightEqualsAvg && !hasUpdatedWeight && !hasUpdatedCheckbox) {
-          console.log(`מוצר לא מעודכן: ${product.productname}`);
-          unupdatedProducts.push(product.productname);
-        }
-      });
-    });
-    
-    console.log(`מוצרים לא מעודכנים:`, unupdatedProducts);
-    
-    if (unupdatedProducts.length > 0) {
-      setMessage({ 
-        text: `שים לב! יש מוצרים שלא עדכנת לגביהם: ${unupdatedProducts.join(', ')}. אנא עדכן את המשקל או סמן "לא קבלתי מוצר".`, 
-        type: 'warning' 
-      });
-      return;
-    }
+        return !finalWeightEqualsAvg || hasUpdatedWeight || hasUpdatedCheckbox || hasExistingNotReceived;
+      })
+    );
+  };
+
+  const saveAllWeights = async () => {
     
     const weightsToSave = Object.keys(tempWeights);
     const checkboxesToSave = Object.keys(notReceivedProducts);
@@ -552,18 +536,20 @@ function CustomerApp() {
                 </tfoot>
               </table>
               
-              {/* צ'קבוקס תשלום */}
-              <div className="payment-status-container">
-                <label className="payment-checkbox-label">
-                  <input
-                    type="checkbox"
-                    checked={paymentStatus}
-                    onChange={(e) => updatePayment(e.target.checked)}
-                    className="payment-checkbox"
-                  />
-                  <span className="payment-text">שילמתי עבור ההזמנה</span>
-                </label>
-              </div>
+              {/* צ'קבוקס תשלום - רק כשכל המוצרים עודכנו */}
+              {areAllProductsUpdated() && (
+                <div className="payment-status-container">
+                  <label className="payment-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={paymentStatus}
+                      onChange={(e) => updatePayment(e.target.checked)}
+                      className="payment-checkbox"
+                    />
+                    <span className="payment-text">שילמתי עבור ההזמנה</span>
+                  </label>
+                </div>
+              )}
             </div>
           ))}
 
