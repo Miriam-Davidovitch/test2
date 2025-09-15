@@ -140,6 +140,7 @@ function CustomerApp() {
       if (isAdmin) {
         headers['x-user-role'] = 'admin';
       }
+      console.log("API_BASE_URL:", config.API_BASE_URL);
 
       let url = `${config.API_BASE_URL}${config.ENDPOINTS.CUSTOMER}/${encodeURIComponent(searchValue)}`;
 
