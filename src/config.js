@@ -1,7 +1,7 @@
 // קובץ הגדרות לכתובות שרת
 const config = {
   // כתובת השרת - תשתנה בהתאם לסביבה
-  API_BASE_URL: 'https://server-side-eight-swart.vercel.app'),  // כתובת השרת ב-Vercel
+  API_BASE_URL: 'https://server-side-eight-swart.vercel.app',  // כתובת השרת ב-Vercel
     
   // נתיבי API
   ENDPOINTS: {
