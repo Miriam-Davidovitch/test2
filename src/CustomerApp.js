@@ -30,6 +30,7 @@ function CustomerApp() {
     setLoading(true);
     
     try {
+      console.log("API_BASE_URL:", config.API_BASE_URL);
       const res = await fetch(`${config.API_BASE_URL}${config.ENDPOINTS.CUSTOMER_BY_ID}/${customerId}`);
       const data = await res.json();
       
