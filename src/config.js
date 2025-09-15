@@ -2,10 +2,10 @@
 const config = {
   // כתובת השרת - תשתנה בהתאם לסביבה
   API_BASE_URL: process.env.REACT_APP_API_URL
-    //|| 
-    //(window.location.hostname === 'localhost' 
-      //? 'http://localhost:5000' 
-      //: 'https://server-side-eight-swart.vercel.app'),  // כתובת השרת ב-Vercel
+    || 
+    (window.location.hostname === 'localhost' 
+      ? 'http://localhost:5000' 
+      : 'https://server-side-eight-swart.vercel.app'),  // כתובת השרת ב-Vercel
     
   // נתיבי API
   ENDPOINTS: {
